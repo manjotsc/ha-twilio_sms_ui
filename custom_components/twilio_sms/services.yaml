@@ -14,7 +14,7 @@ send_message:
       name: Message
       description: The message body. Supports Jinja2 templates (e.g., "Temperature is {{ states('sensor.temp') }}").
       required: true
-      example: "Hello {{ user }}!"
+      example: "HA Version: {{ state_attr('update.home_assistant_core_update', 'installed_version') }}"
       selector:
         text:
           multiline: true

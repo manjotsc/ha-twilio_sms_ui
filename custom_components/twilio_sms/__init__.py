@@ -19,6 +19,8 @@ from .const import (
     CONF_ACCOUNT_SID,
     CONF_AUTH_TOKEN,
     CONF_PHONE_NUMBERS,
+    CONF_EXTERNAL_URL,
+    CONF_DEBUG,
     ATTR_TARGET,
     ATTR_MESSAGE,
     ATTR_MEDIA_URL,
@@ -73,7 +75,7 @@ def _update_service_schema(hass: HomeAssistant) -> None:
                 "name": "Message",
                 "description": "Message body. Supports Jinja2 templates.",
                 "required": True,
-                "example": "Hello {{ user }}!",
+                "example": "HA Version: {{ state_attr('update.home_assistant_core_update', 'installed_version') }}",
                 "selector": {"text": {"multiline": True}},
             },
             ATTR_MEDIA_URL: {
@@ -115,6 +117,23 @@ def _render_template(hass: HomeAssistant, tpl: template.Template | str) -> str:
     return str(tpl)
 
 
+def _get_external_url(hass: HomeAssistant) -> str | None:
+    """Get the configured external URL from any entry."""
+    for entry_data in hass.data.get(DOMAIN, {}).values():
+        external_url = entry_data.get("external_url")
+        if external_url:
+            return external_url
+    return None
+
+
+def _is_debug_enabled(hass: HomeAssistant) -> bool:
+    """Check if debug logging is enabled."""
+    for entry_data in hass.data.get(DOMAIN, {}).values():
+        if entry_data.get("debug", False):
+            return True
+    return False
+
+
 def _convert_local_path_to_url(hass: HomeAssistant, path: str) -> str:
     """Convert local HA path to external URL."""
     if path.startswith(("http://", "https://")):
@@ -122,16 +141,25 @@ def _convert_local_path_to_url(hass: HomeAssistant, path: str) -> str:
 
     for prefix in LOCAL_PATH_PREFIXES:
         if path.startswith(prefix):
-            try:
-                base_url = get_url(hass, allow_internal=False, prefer_external=True)
-                return f"{base_url.rstrip('/')}{path}"
-            except Exception:
-                _LOGGER.warning(
-                    "Could not get external URL for local path %s. "
-                    "Make sure Home Assistant is accessible externally.",
-                    path,
-                )
-                return path
+            # First try user-configured external URL
+            base_url = _get_external_url(hass)
+
+            # Fall back to HA's get_url if not configured
+            if not base_url:
+                try:
+                    base_url = get_url(hass, allow_internal=False, prefer_external=True)
+                except Exception:
+                    _LOGGER.warning(
+                        "Could not get external URL for local path %s. "
+                        "Configure external URL in integration settings.",
+                        path,
+                    )
+                    return path
+
+            full_url = f"{base_url.rstrip('/')}{path}"
+            if _is_debug_enabled(hass):
+                _LOGGER.warning("Twilio SMS Debug: Converted %s to %s", path, full_url)
+            return full_url
 
     return path
 
@@ -144,13 +172,22 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     phone_numbers = entry.options.get(
         CONF_PHONE_NUMBERS, entry.data.get(CONF_PHONE_NUMBERS, [])
     )
+    external_url = entry.options.get(
+        CONF_EXTERNAL_URL, entry.data.get(CONF_EXTERNAL_URL, "")
+    )
 
     client = Client(account_sid, auth_token)
+
+    debug = entry.options.get(
+        CONF_DEBUG, entry.data.get(CONF_DEBUG, False)
+    )
 
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = {
         "client": client,
         "phone_numbers": phone_numbers,
+        "external_url": external_url,
+        "debug": debug,
     }
 
     async def async_send_message(call: ServiceCall) -> None:
@@ -187,6 +224,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
         for target in targets:
             try:
+                if _is_debug_enabled(hass):
+                    _LOGGER.warning(
+                        "Twilio SMS Debug: Sending to %s from %s with media_urls: %s",
+                        target, from_number, media_urls
+                    )
                 await hass.async_add_executor_job(
                     _send_twilio_message,
                     entry_client,

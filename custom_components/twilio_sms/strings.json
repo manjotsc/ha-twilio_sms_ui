@@ -11,9 +11,13 @@
       },
       "select_numbers": {
         "title": "Select Phone Numbers",
-        "description": "Select the Twilio phone numbers you want to use for sending SMS.",
+        "description": "Select the Twilio phone numbers you want to use for sending SMS.\n\nExternal URL is required for MMS with local files (e.g., camera snapshots). Enter your Home Assistant external URL including http:// or https://",
         "data": {
-          "phone_numbers": "Phone Numbers"
+          "phone_numbers": "Phone Numbers",
+          "external_url": "External URL (for MMS)"
+        },
+        "data_description": {
+          "external_url": "Example: https://my-home.duckdns.org or http://your-public-ip:8123"
         }
       }
     },
@@ -31,10 +35,16 @@
   "options": {
     "step": {
       "init": {
-        "title": "Twilio Phone Numbers",
-        "description": "Select the phone numbers to use for sending SMS.",
+        "title": "Twilio Settings",
+        "description": "Configure phone numbers and external URL for MMS.",
         "data": {
-          "phone_numbers": "Phone Numbers"
+          "phone_numbers": "Phone Numbers",
+          "external_url": "External URL (for MMS)",
+          "debug": "Enable Debug Logging"
+        },
+        "data_description": {
+          "external_url": "Example: https://my-home.duckdns.org or http://your-public-ip:8123",
+          "debug": "Log detailed information to help troubleshoot issues"
         }
       }
     },

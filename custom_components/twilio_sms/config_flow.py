@@ -18,6 +18,8 @@ from .const import (
     CONF_ACCOUNT_SID,
     CONF_AUTH_TOKEN,
     CONF_PHONE_NUMBERS,
+    CONF_EXTERNAL_URL,
+    CONF_DEBUG,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -98,6 +100,7 @@ class TwilioConfigFlow(ConfigFlow, domain=DOMAIN):
 
         if user_input is not None:
             selected_numbers = user_input.get(CONF_PHONE_NUMBERS, [])
+            external_url = user_input.get(CONF_EXTERNAL_URL, "").strip().rstrip("/")
 
             if not selected_numbers:
                 errors["base"] = "no_selection"
@@ -111,6 +114,7 @@ class TwilioConfigFlow(ConfigFlow, domain=DOMAIN):
                         CONF_ACCOUNT_SID: self._account_sid,
                         CONF_AUTH_TOKEN: self._auth_token,
                         CONF_PHONE_NUMBERS: selected_numbers,
+                        CONF_EXTERNAL_URL: external_url,
                     },
                 )
 
@@ -124,6 +128,7 @@ class TwilioConfigFlow(ConfigFlow, domain=DOMAIN):
             data_schema=vol.Schema(
                 {
                     vol.Required(CONF_PHONE_NUMBERS): cv.multi_select(number_options),
+                    vol.Optional(CONF_EXTERNAL_URL, default=""): str,
                 }
             ),
             errors=errors,
@@ -164,18 +169,34 @@ class TwilioOptionsFlow(OptionsFlow):
 
         if user_input is not None:
             selected_numbers = user_input.get(CONF_PHONE_NUMBERS, [])
+            external_url = user_input.get(CONF_EXTERNAL_URL, "").strip().rstrip("/")
+            debug = user_input.get(CONF_DEBUG, False)
 
             if not selected_numbers:
                 errors["base"] = "no_selection"
             else:
                 return self.async_create_entry(
                     title="",
-                    data={CONF_PHONE_NUMBERS: selected_numbers},
+                    data={
+                        CONF_PHONE_NUMBERS: selected_numbers,
+                        CONF_EXTERNAL_URL: external_url,
+                        CONF_DEBUG: debug,
+                    },
                 )
 
         current_numbers = self._config_entry.options.get(
             CONF_PHONE_NUMBERS,
             self._config_entry.data.get(CONF_PHONE_NUMBERS, [])
+        )
+
+        current_url = self._config_entry.options.get(
+            CONF_EXTERNAL_URL,
+            self._config_entry.data.get(CONF_EXTERNAL_URL, "")
+        )
+
+        current_debug = self._config_entry.options.get(
+            CONF_DEBUG,
+            self._config_entry.data.get(CONF_DEBUG, False)
         )
 
         number_options = {
@@ -190,6 +211,12 @@ class TwilioOptionsFlow(OptionsFlow):
                     vol.Required(
                         CONF_PHONE_NUMBERS, default=current_numbers
                     ): cv.multi_select(number_options),
+                    vol.Optional(
+                        CONF_EXTERNAL_URL, default=current_url
+                    ): str,
+                    vol.Optional(
+                        CONF_DEBUG, default=current_debug
+                    ): bool,
                 }
             ),
             errors=errors,
