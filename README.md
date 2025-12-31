@@ -27,7 +27,7 @@
 
 1. Open **HACS** in Home Assistant
 2. Click **Integrations** → **⋮** → **Custom repositories**
-3. Add repository URL and select **Integration**
+3. Add `https://github.com/manjotsc/ha-twilio_sms` and select **Integration**
 4. Search for **Twilio SMS** and install
 5. Restart Home Assistant
 
