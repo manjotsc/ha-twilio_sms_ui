@@ -22,8 +22,8 @@ jobs:
       - name: HACS Validation
         uses: hacs/action@main
         with:
-          category: integration
-          ignore: brands
+          category: "integration"
+          ignore: "brands"
 
   validate-hassfest:
     name: Hassfest Validation
