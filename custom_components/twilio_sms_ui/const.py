@@ -1,6 +1,6 @@
 """Constants for the Twilio SMS integration."""
 
-DOMAIN = "twilio_sms"
+DOMAIN = "twilio_sms_ui"
 
 # Configuration keys
 CONF_ACCOUNT_SID = "account_sid"

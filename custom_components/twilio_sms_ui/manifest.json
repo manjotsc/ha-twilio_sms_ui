@@ -1,5 +1,5 @@
 {
-  "domain": "twilio_sms",
+  "domain": "twilio_sms_ui",
   "name": "Twilio SMS",
   "codeowners": [],
   "config_flow": true,
