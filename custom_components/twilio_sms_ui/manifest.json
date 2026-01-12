@@ -1,12 +1,12 @@
 {
   "domain": "twilio_sms_ui",
   "name": "Twilio SMS",
-  "codeowners": [],
+  "codeowners": ["@manjotsc"],
   "config_flow": true,
   "dependencies": [],
-  "documentation": "https://github.com/your-repo/ha-twilio_sms",
+  "documentation": "https://github.com/manjotsc/ha-twilio_sms",
   "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/your-repo/ha-twilio_sms/issues",
+  "issue_tracker": "https://github.com/manjotsc/ha-twilio_sms/issues",
   "requirements": ["twilio==9.3.7"],
   "version": "1.0.0"
 }
