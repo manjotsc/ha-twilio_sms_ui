@@ -20,17 +20,17 @@ jobs:
           version="${{ github.event.release.tag_name }}"
           version="${version#v}"
           jq --arg version "$version" '.version = $version' \
-            custom_components/twilio_sms/manifest.json > tmp.json
-          mv tmp.json custom_components/twilio_sms/manifest.json
+            custom_components/twilio_sms_ui/manifest.json > tmp.json
+          mv tmp.json custom_components/twilio_sms_ui/manifest.json
 
       - name: Create release zip
         run: |
-          cd custom_components/twilio_sms
-          zip -r ../../twilio_sms.zip .
+          cd custom_components/twilio_sms_ui
+          zip -r ../../twilio_sms_ui.zip .
 
       - name: Upload release asset
         uses: softprops/action-gh-release@v2
         with:
-          files: twilio_sms.zip
+          files: twilio_sms_ui.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
