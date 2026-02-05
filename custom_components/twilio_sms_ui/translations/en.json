@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Twilio Account",
-        "description": "Enter your Twilio Account SID and Auth Token.\n\nFind your credentials at:\n- [US Console](https://console.twilio.com/us1/account/keys-credentials/api-keys)\n- [Australia Console](https://console.twilio.com/au1/account/keys-credentials/api-keys)\n- [Ireland Console](https://console.twilio.com/ie1/account/keys-credentials/api-keys)\n- [General Console](https://console.twilio.com)",
+        "description": "Enter your Twilio Account SID and Auth Token.\n\nFind your credentials in the Twilio Console under Account > Keys & Credentials > API Keys.",
         "data": {
           "account_sid": "Account SID",
           "auth_token": "Auth Token"
