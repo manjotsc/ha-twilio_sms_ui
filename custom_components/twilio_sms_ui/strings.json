@@ -17,7 +17,7 @@
           "external_url": "External URL (for MMS)"
         },
         "data_description": {
-          "external_url": "Example: https://my-home.duckdns.org or http://your-public-ip:8123"
+          "external_url": "Your publicly accessible Home Assistant URL (e.g., my-home.duckdns.org:8123)"
         }
       }
     },
@@ -43,7 +43,7 @@
           "debug": "Enable Debug Logging"
         },
         "data_description": {
-          "external_url": "Example: https://my-home.duckdns.org or http://your-public-ip:8123",
+          "external_url": "Your publicly accessible Home Assistant URL (e.g., my-home.duckdns.org:8123)",
           "debug": "Log detailed information to help troubleshoot issues"
         }
       }
